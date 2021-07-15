@@ -4,10 +4,10 @@ void setup_bma() {
   BMA * sensor = ttgo->bma;
 
   Acfg cfg;
-  cfg.odr = BMA4_OUTPUT_DATA_RATE_100HZ;
+  cfg.odr = BMA4_OUTPUT_DATA_RATE_12_5HZ;
   cfg.range = BMA4_ACCEL_RANGE_2G;
   cfg.bandwidth = BMA4_ACCEL_NORMAL_AVG4;
-  cfg.perf_mode = BMA4_CONTINUOUS_MODE;
+  cfg.perf_mode = BMA4_CIC_AVG_MODE;
 
   sensor->accelConfig(cfg);
 
