@@ -1,6 +1,8 @@
 
 
 String refresh_printer_status() {
+  esp_log("printer status requested:");
+  
   if (!WiFi.isConnected()) {
     return "Not connected to WiFi";
   }
@@ -8,6 +10,8 @@ String refresh_printer_status() {
   if (WiFi.SSID() != "ORBI64") {
     return "Not connected to ORBI64 (" + WiFi.SSID() + ")";
   }
+
+  esp_log("  connected to wifi");
 
   WiFiClient client;
   const int port = 80;
@@ -18,12 +22,16 @@ String refresh_printer_status() {
     return "Connection to \"" + String(host) + "\" failed";
   }
 
+  esp_log("  client connected to host");
+
   String url = "/api/job";
   String request = "GET " + url + " HTTP/1.1\r\n" +
                    "Host: " + host + "\r\n" +
                    "X-Api-Key: " + String(PRINTER_API_KEY) +
                    "\r\nConnection: close\r\n\r\n";
   client.print(request);
+
+  esp_log("  request made");
 
   unsigned long timeout = millis();
   while (client.available() == 0) {
@@ -41,6 +49,8 @@ String refresh_printer_status() {
     client.stop();
     return String(F("Unexpected response: ")) + status;
   }
+  
+  esp_log("  http status recieved");
 
   // Skip HTTP headers
   char endOfHeaders[] = "\r\n\r\n";
@@ -49,19 +59,28 @@ String refresh_printer_status() {
     return F("Invalid response");
   }
 
-  DynamicJsonDocument doc(2048);
+  esp_log("  headers recieved");
+
+  DynamicJsonDocument doc(1024);
+  esp_log("  json document allocated");
   DeserializationError error = deserializeJson(doc, client);
+  esp_log("  json client started");
 
   if (error) {
     client.stop();
-    return String("deserializing error: ") + String(error.f_str());
+    String error_string = "deserializing error: " + String(error.f_str());
+    return error_string;
   }
+  
+  esp_log("  json deserialized");
 
   String printer_status = "";
 
   const char * printer_state = doc["status"];
   const char * file_name = doc["job"]["file"]["name"];
   float completion = doc["progress"]["completion"];
+  
+  esp_log("  document parsed");
 
   esp_log(String("printer status is ") + printer_state);
 
@@ -72,8 +91,12 @@ String refresh_printer_status() {
   } else {
     printer_status = String("Printer in state \"") + printer_state;
   }
+  
+  esp_log("  state generated");
 
   client.stop();
+
+  esp_log("  client closed");
 
   return printer_status;
 }
