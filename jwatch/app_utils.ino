@@ -80,11 +80,23 @@ String refresh_printer_status() {
   const char * printer_state = doc["state"];
   const char * file_name = doc["job"]["file"]["name"];
   float completion = doc["progress"]["completion"];
+  int print_time_left = doc["progress"]["printTimeLeft"];
   
   esp_log("  document parsed");
 
   if (String(printer_state).compareTo("Printing") == 0) {
     printer_status = String("Printing: \"") + file_name + "\"\n" + String(completion, 1) + "% complete";
+    if (print_time_left > 0) {
+      if (print_time_left >= 60) {
+        if (print_time_left >= 3600) {
+          printer_status += "\nEstimated " + String((int)floor(print_time_left / 3600.0)) + "h " + String((int)floor((print_time_left % 3600) / 60.0)) + "m " + String(print_time_left % 60) + "s left";
+        } else {
+          printer_status += "\nEstimated " + String((int)floor(print_time_left / 60.0)) + "m " + String(print_time_left % 60) + "s left";
+        }
+      } else {
+        printer_status += "\nEstimated " + String(print_time_left) + "s left";
+      }
+    }
   } else if (String(printer_state).compareTo("Operational") == 0) {
     printer_status = String("Printer is idle.\nLast printed file: \"") + file_name + "\"";
   } else {
