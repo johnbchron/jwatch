@@ -6,7 +6,7 @@
 
 #define DEVICE_NAME "jWatch"
 
-#define TRANSITION_TIME 300
+#define TRANSITION_TIME 200
 #define DEFAULT_BL_VALUE 83
 #define GLOBAL_PADDING 6
 
