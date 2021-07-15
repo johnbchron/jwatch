@@ -64,6 +64,7 @@ String refresh_printer_status() {
   DynamicJsonDocument doc(1024);
   esp_log("  json document allocated");
   DeserializationError error = deserializeJson(doc, client);
+  
   esp_log("  json client started");
 
   if (error) {
@@ -73,23 +74,21 @@ String refresh_printer_status() {
   }
   
   esp_log("  json deserialized");
-
+  
   String printer_status = "";
 
-  const char * printer_state = doc["status"];
+  const char * printer_state = doc["state"];
   const char * file_name = doc["job"]["file"]["name"];
   float completion = doc["progress"]["completion"];
   
   esp_log("  document parsed");
 
-  esp_log(String("printer status is ") + printer_state);
-
-  if (printer_state == "Printing") {
+  if ((bool)doc["state"]["flags"]["printing"]) {
     printer_status = String("Printing: \"") + file_name + "\"\n" + String(completion, 1) + "% complete";
-  } else if (printer_state == "Operational") {
+  } else if ((bool)doc["state"]["flags"]["ready"]) {
     printer_status = String("Printer is idle.\nLast printed file: \"") + file_name + "\"";
   } else {
-    printer_status = String("Printer in state \"") + printer_state;
+    printer_status = String("Printer in state \"") + printer_state + String('\"');
   }
   
   esp_log("  state generated");
@@ -103,6 +102,53 @@ String refresh_printer_status() {
 
 void refresh_printer_status(lv_obj_t * obj, lv_event_t event) {
   if (event == LV_EVENT_CLICKED) {
-    lv_label_set_text(printer_status_label, refresh_printer_status().c_str());
+    String printer_status = refresh_printer_status();
+    Serial.print("printer status is \""); Serial.print(printer_status); Serial.println('\"');
+//    esp_log("printer status is \"" + printer_status + "\"");    
+    lv_label_set_text(printer_status_label, printer_status.c_str());
   }
+}
+
+String parse_printer_state_json(DynamicJsonDocument root){
+
+  const char* printer_state_text = root["state"];
+//  double printer_temperature_bed = root["temperature"]["bed"]["actual"];
+//  double printer_temperature_bed_target = root["temperature"]["bed"]["target"];
+//  double printer_temperature_tool0 = root["temperature"]["tool0"]["actual"];
+//  double printer_temperature_tool0_target = root["temperature"]["tool0"]["target"];
+
+//  boolean is_printing = root["state"]["flags"]["printing"];
+//  boolean is_ready = root["state"]["flags"]["ready"];
+//  boolean is_paused = root["state"]["flags"]["paused"];
+//  boolean is_operational = root["state"]["flags"]["operational"];
+//  boolean has_error = root["state"]["flags"]["error"];
+  
+//  Serial.print("printer_state_text: ");
+//  Serial.println(printer_state_text);
+//  
+//  Serial.print("printer_temperature_bed: ");
+//  Serial.println(printer_temperature_bed);
+//  Serial.print("printer_temperature_bed_target: ");
+//  Serial.println(printer_temperature_bed_target);
+//  Serial.print("printer_temperature_tool0: ");
+//  Serial.println(printer_temperature_tool0);
+//  Serial.print("printer_temperature_tool0_target: ");
+//  Serial.println(printer_temperature_tool0_target);
+//
+//  String status_text = "";
+//  if(is_ready){
+//    status_text = "PRINTER READY";
+//  }
+//  if(is_printing){
+//    status_text = "PRINTING";
+//  }
+//  if(is_paused){
+//    status_text = "PAUSED";
+//  }
+//  if(has_error){
+//    status_text = "ERROR";
+//  }
+
+//  esp_log("status_text: " + status_text);
+  return printer_state_text;
 }
