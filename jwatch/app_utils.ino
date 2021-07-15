@@ -83,12 +83,12 @@ String refresh_printer_status() {
   
   esp_log("  document parsed");
 
-  if ((bool)doc["state"]["flags"]["printing"]) {
+  if (String(printer_state).compareTo("Printing") == 0) {
     printer_status = String("Printing: \"") + file_name + "\"\n" + String(completion, 1) + "% complete";
-  } else if ((bool)doc["state"]["flags"]["ready"]) {
+  } else if (String(printer_state).compareTo("Operational") == 0) {
     printer_status = String("Printer is idle.\nLast printed file: \"") + file_name + "\"";
   } else {
-    printer_status = String("Printer in state \"") + printer_state + String('\"');
+    printer_status = String("Printer is in state \"") + printer_state + String('\"');
   }
   
   esp_log("  state generated");
