@@ -59,3 +59,26 @@ void update_wifi_task(void *pvParameters) {
     delay(3000);
   }
 }
+
+void update_battery_percentage_history_task(void *pvParameters){
+  for (int i = 0; i < BATTERY_PERCENTAGE_HISTORY_READINGS; i++) {
+    battery_percentage_history[i] = 0;  
+  }
+
+  while (true) {
+    uint8_t current = ttgo->power->getBattPercentage();
+//    uint8_t current = 50;
+    
+    if (battery_percentage_history_readings < BATTERY_PERCENTAGE_HISTORY_READINGS) {
+      battery_percentage_history[battery_percentage_history_readings] = current;
+      battery_percentage_history_readings++;
+    } else {
+      for (int i = 0; i < BATTERY_PERCENTAGE_HISTORY_READINGS - 1; i++) {
+        battery_percentage_history[i] = battery_percentage_history[i+1];
+      }
+      battery_percentage_history[BATTERY_PERCENTAGE_HISTORY_READINGS] = current;
+    }
+
+    delay(BATTERY_PERCENTAGE_HISTORY_HOURS * 60 * 60 * 1000 / BATTERY_PERCENTAGE_HISTORY_READINGS);
+  }
+}

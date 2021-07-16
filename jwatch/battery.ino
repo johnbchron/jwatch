@@ -31,7 +31,7 @@ void update_battery_label(){
 
   msg = msg + "\n\nbattery voltage = " + batt_v/1000 + " V";
   msg = msg + "\nbus voltage = " + vbus_v/1000 + " V";
-  msg = msg + "\nbus current = " + vbus_c + " mA";
+  msg = msg + "\nbus current = " + vbus_c + " mA\n\nPercentage Graph:";
 
   lv_label_set_text(battery_label_reference, msg.c_str());
 }

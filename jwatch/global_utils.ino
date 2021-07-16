@@ -46,13 +46,10 @@ void setup_watch() {
   lv_task_t * update_task = lv_task_create(update_screens_task, 1000, LV_TASK_PRIO_MID, NULL);
   lv_task_t * irq_task = lv_task_create(update_irq_task, 100, LV_TASK_PRIO_MID, NULL);
   lv_task_t * device_timeout_task = lv_task_create(update_device_timeout_task, 100, LV_TASK_PRIO_MID, NULL);
-//  lv_task_t * update_wifi = lv_task_create(update_wifi_task, 10000, LV_TASK_PRIO_MID, NULL);
 
   lv_obj_set_style_local_bg_color(lv_scr_act(), LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_BLACK);
 
   esp_log("\nwatch initialized");
-
-//  setCpuFrequencyMhz(LOW_CPU);
 
   if(!SPIFFS.begin(false)){
     esp_log("SPIFFS Mount Failed");
@@ -61,6 +58,7 @@ void setup_watch() {
   read_file_to_wifi_pair(SPIFFS);
 
   xTaskCreate(update_wifi_task, "update_wifi", 2048, NULL, 2, NULL);
+  xTaskCreate(update_battery_percentage_history_task, "battery_percentage_history", 2048, NULL, 2, NULL);
 }
 
 void esp_log(String string) {

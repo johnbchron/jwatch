@@ -58,6 +58,9 @@ bool use_transitions = true;
 bool use_wifi = true;
 uint8_t wifi_failed_connection_attempts = 0;
 
+short int battery_percentage_history[BATTERY_PERCENTAGE_HISTORY_READINGS];
+uint8_t battery_percentage_history_readings = 0;
+
 uint8_t last_bl_value = DEFAULT_BL_VALUE;
 //timelib_t timelib_now;
 
@@ -93,6 +96,7 @@ void update_screens_task(lv_task_t * task);
 void update_device_time_task(lv_task_t * task);
 void update_low_cpu_task(lv_task_t * task);
 void update_wifi_task(void *pvParameters);
+void update_battery_percentage_history_task(void *pvParameters);
 
 void update_rtc_time();
 void update_screen_time();

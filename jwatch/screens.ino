@@ -271,17 +271,34 @@ void prepare_screen(uint8_t _screen) {
       lv_obj_set_event_cb(back_button, change_screens_settings_cb);
       lv_obj_align(back_button, NULL, LV_ALIGN_IN_TOP_RIGHT, -GLOBAL_PADDING, GLOBAL_PADDING);
 
-      lv_obj_t * battery_label = lv_label_create(scr, NULL);
+      lv_obj_t * page = lv_page_create(scr, NULL);
+      lv_obj_set_style_local_bg_color(page, LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_BLACK);
+      lv_obj_add_style(page, LV_PAGE_PART_BG, &page_style);
+      lv_obj_add_style(page, LV_PAGE_PART_SCROLLABLE, &inner_page_style);
+      lv_obj_set_size(page, 240, 240 - max(lv_obj_get_height(back_button), lv_obj_get_height(screen_label)) - (GLOBAL_PADDING * 2));
+      lv_obj_align(page, NULL, LV_ALIGN_IN_TOP_LEFT, 0, max(lv_obj_get_height(back_button), lv_obj_get_height(screen_label)) + (GLOBAL_PADDING * 2));
+      lv_page_set_scrl_layout(page, LV_LAYOUT_COLUMN_LEFT);
+
+      lv_obj_t * battery_label = lv_label_create(page, NULL);
       lv_obj_add_style(battery_label, LV_LABEL_PART_MAIN, &label_style);
       lv_obj_add_style(battery_label, LV_LABEL_PART_MAIN, &small_label_style);
-      lv_obj_align(battery_label, NULL, LV_ALIGN_IN_TOP_LEFT, GLOBAL_PADDING, max(lv_obj_get_height(back_button), lv_obj_get_height(screen_label)) + (GLOBAL_PADDING * 2));
+//      lv_obj_align(battery_label, NULL, LV_ALIGN_IN_TOP_LEFT, GLOBAL_PADDING, max(lv_obj_get_height(back_button), lv_obj_get_height(screen_label)) + (GLOBAL_PADDING * 2));
       lv_label_set_recolor(battery_label, true);
       lv_label_set_long_mode(battery_label, LV_LABEL_LONG_BREAK);
       lv_obj_set_width(battery_label, 240 - (GLOBAL_PADDING * 2));
-
-      battery_label_reference = battery_label;
       
+      battery_label_reference = battery_label;
       update_battery_label();
+
+      lv_obj_t * chart = lv_chart_create(page, NULL);
+      lv_obj_set_size(chart, 220, 150);
+      lv_chart_set_type(chart, LV_CHART_TYPE_LINE);
+      lv_chart_set_range(chart, 0, 100);
+      lv_page_glue_obj(chart, true);
+
+      lv_chart_series_t * ser1 = lv_chart_add_series(chart, LV_COLOR_GREEN);
+      lv_chart_set_ext_array(chart, ser1, battery_percentage_history, BATTERY_PERCENTAGE_HISTORY_READINGS);
+      lv_chart_refresh(chart);
       
       break;
     }
