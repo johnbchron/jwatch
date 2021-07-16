@@ -1,16 +1,7 @@
 #include <ArduinoJson.h>
 
-//#include <WiFiUdp.h>
-//#include <WiFiClient.h>
-//#include <WiFiServer.h>
-//#include <WiFiSTA.h>
-//#include <WiFiType.h>
-//#include <WiFiAP.h>
 #include <WiFi.h>
 #include <WiFiMulti.h>
-//#include <WiFiScan.h>
-//#include <WiFiGeneric.h>
-//#include <ETH.h>
 
 #include "FS.h"
 #include "SPIFFS.h"
