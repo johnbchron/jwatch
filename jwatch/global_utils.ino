@@ -20,7 +20,7 @@ void setup_watch() {
   rtc = ttgo->rtc;
   rtc->check();
 
-  setup_bma();
+  if (USE_ACCELEROMETER) { setup_bma(); }
   
   pinMode(AXP202_INT, INPUT_PULLUP);
   attachInterrupt(AXP202_INT, [] {

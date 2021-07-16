@@ -10,6 +10,8 @@
 #define DEFAULT_BL_VALUE 83
 #define GLOBAL_PADDING 6
 
+#define USE_ACCELEROMETER false
+
 #define HIGH_CPU 160
 #define LOW_CPU 10
 #define DEAD_CPU 10
